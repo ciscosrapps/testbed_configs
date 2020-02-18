@@ -1,0 +1,205 @@
+
+
+RP/0/RP0/CPU0:LSR06#sho run
+Tue Feb  4 19:44:25.348 UTC
+Building configuration...
+!! IOS XR Configuration 7.0.2.07I
+!! Last configuration change at Wed Jan 15 00:35:09 2020 by cisco
+!
+hostname LSR06
+username cisco
+ group root-lr
+ group cisco-support
+ secret 10 $6$l0MxX.Kz6pD0X...$6SXPg1RVwQ1Fc06GoE5.GABYCrx5rOO/anvOuEMjtv4hZ9XeLQ/g9zO/d76dx25i3z3XzU9mx0UzeJm0gsxbE.
+!
+grpc
+ port 57400
+ no-tls
+ address-family ipv4
+ service-layer
+ !
+!
+telemetry model-driven
+ destination-group voltron
+  address-family ipv4 10.0.250.2 port 32400
+   encoding self-describing-gpb
+   protocol grpc no-tls
+  !
+ !
+ sensor-group cisco_models
+  sensor-path Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interface-xr/interface
+ !
+ sensor-group openconfig_interfaces
+  sensor-path openconfig-interfaces:interfaces/interface
+ !
+ subscription base_metrics
+  sensor-group-id cisco_models sample-interval 30000
+  sensor-group-id openconfig_interfaces sample-interval 30000
+  destination-id voltron
+ !
+!
+tpa
+ vrf default
+  address-family ipv4
+   default-route mgmt
+   update-source dataports MgmtEth0/RP0/CPU0/0
+  !
+ !
+!
+call-home
+ service active
+ contact smart-licensing
+ profile CiscoTAC-1
+  active
+  destination transport-method http
+ !
+!
+netconf-yang agent
+ ssh
+!
+interface Loopback0
+ description router lo0 
+ ipv4 address 10.0.0.6 255.255.255.255
+ ipv6 address 10::6/128
+!
+interface MgmtEth0/RP0/CPU0/0
+ description mgt 
+ ipv4 address 10.251.251.106 255.255.255.0
+!
+interface GigabitEthernet0/0/0/0
+ description to r0 
+ ipv4 address 10.1.1.81 255.255.255.254
+ ipv6 address 10:1:1::81/127
+!
+interface GigabitEthernet0/0/0/1
+ description to r1
+ ipv4 address 10.1.1.82 255.255.255.254
+ ipv6 address 10:1:1::82/127
+!
+interface GigabitEthernet0/0/0/2
+ description to r2
+ ipv4 address 10.1.1.84 255.255.255.254
+ ipv6 address 10:1:1::84/127
+!
+interface GigabitEthernet0/0/0/3
+ shutdown
+!
+interface GigabitEthernet0/0/0/4
+ shutdown
+!
+interface GigabitEthernet0/0/0/5
+ shutdown
+!
+interface GigabitEthernet0/0/0/6
+ shutdown
+!
+interface GigabitEthernet0/0/0/7
+ shutdown
+!
+interface GigabitEthernet0/0/0/8
+ shutdown
+!
+interface GigabitEthernet0/0/0/9
+ shutdown
+!
+route-policy SID($SID)
+  set label-index $SID
+end-policy
+!
+route-policy drop
+  drop
+end-policy
+!
+route-policy pass
+  pass
+end-policy
+!
+router isis 100
+ is-type level-2-only
+ net 49.0901.0000.0000.0006.00
+ distribute link-state level 2
+ nsf ietf
+ address-family ipv4 unicast
+  metric-style wide
+  advertise link attributes
+  mpls traffic-eng level-2-only
+  mpls traffic-eng router-id Loopback0
+  maximum-paths 32
+  segment-routing mpls
+ !
+ address-family ipv6 unicast
+  metric-style wide
+  advertise link attributes
+  maximum-paths 32
+ !        
+ interface Loopback0
+  passive
+  address-family ipv4 unicast
+   prefix-sid absolute 100006
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/0
+  circuit-type level-2-only
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix level 2
+   fast-reroute per-prefix ti-lfa
+   fast-reroute per-prefix ti-lfa level 2
+   metric 1
+  !
+  address-family ipv6 unicast
+   fast-reroute per-prefix level 2
+   fast-reroute per-prefix ti-lfa
+   fast-reroute per-prefix ti-lfa level 2
+   metric 1
+  !
+ !
+ interface GigabitEthernet0/0/0/1
+  circuit-type level-2-only
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix level 2
+   fast-reroute per-prefix ti-lfa
+   fast-reroute per-prefix ti-lfa level 2
+   metric 1
+  !
+  address-family ipv6 unicast
+   fast-reroute per-prefix level 2
+   fast-reroute per-prefix ti-lfa
+   fast-reroute per-prefix ti-lfa level 2
+   metric 1
+  !
+ !
+ interface GigabitEthernet0/0/0/2
+  circuit-type level-2-only
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix level 2
+   fast-reroute per-prefix ti-lfa
+   fast-reroute per-prefix ti-lfa level 2
+   metric 1
+  !
+  address-family ipv6 unicast
+   fast-reroute per-prefix level 2
+   fast-reroute per-prefix ti-lfa
+   fast-reroute per-prefix ti-lfa level 2
+   metric 1
+  !
+ !
+!
+segment-routing
+ global-block 100000 163999
+!
+xml agent tty
+ iteration off
+!
+netconf agent tty
+!
+ssh server rate-limit 600
+ssh server session-limit 100
+ssh server v2
+ssh server vrf default
+ssh server netconf vrf default
+end
