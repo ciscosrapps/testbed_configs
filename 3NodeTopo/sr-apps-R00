@@ -1,0 +1,236 @@
+hostname R00
+username cisco
+ group root-lr
+ group cisco-support
+ secret 5 $1$T.cq$Uj0XGdP4Kv1LmXo/KT1Fm/
+!
+grpc
+ port 57400
+!
+telemetry model-driven
+ destination-group voltron
+  address-family ipv4 10.0.250.2 port 32400
+   encoding self-describing-gpb
+   protocol grpc no-tls
+  !
+ !
+ sensor-group cisco_models
+  sensor-path Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interface-xr/interface
+ !
+ sensor-group openconfig_interfaces
+  sensor-path openconfig-interfaces:interfaces/interface
+ !
+ subscription base_metrics
+  sensor-group-id cisco_models sample-interval 30000
+  sensor-group-id openconfig_interfaces sample-interval 30000
+  destination-id voltron
+ !
+!
+tpa
+ vrf default
+  address-family ipv4
+   update-source dataports Loopback0
+  !
+ !
+!
+call-home
+ service active
+ contact smart-licensing
+ profile CiscoTAC-1
+  active
+  destination transport-method http
+ !
+!
+netconf-yang agent
+ ssh
+!
+! 
+interface Loopback0
+ ipv4 address 10.0.0.0 255.255.255.255
+ ipv6 address 10::/128
+!
+interface MgmtEth0/RP0/CPU0/0
+ description mgt  
+ ipv4 address 10.251.251.100 255.255.255.0
+!
+interface GigabitEthernet0/0/0/0
+ description to centos-jalapeno  
+ ipv4 address 10.0.250.1 255.255.255.0
+ ipv6 address 10:beef:250::1/119
+ ipv6 enable
+!
+interface GigabitEthernet0/0/0/1
+ description to r1  
+ ipv4 address 10.1.1.0 255.255.255.254
+ ipv6 address 10:1:1::/127
+!
+interface GigabitEthernet0/0/0/2
+ description to r2  
+ ipv4 address 10.1.1.2 255.255.255.254
+ ipv6 address 10:1:1::2/127
+!
+!
+prefix-set jalapeno
+  10.0.250.0/24
+end-set
+!
+route-policy SID($SID)
+  set label-index $SID
+end-policy
+!
+route-policy drop
+  drop
+end-policy
+!
+route-policy pass
+  pass
+end-policy
+!
+route-policy jalapeno
+  if destination in jalapeno then
+    pass
+  else
+    drop
+  endif
+end-policy
+!
+router isis 100
+ is-type level-2-only
+ net 49.0901.0000.0000.0000.00
+ distribute link-state level 2 
+ nsf ietf
+ address-family ipv4 unicast
+  metric-style wide
+  mpls traffic-eng level-2-only
+  mpls traffic-eng router-id Loopback0
+  maximum-paths 32
+  redistribute connected route-policy jalapeno
+  segment-routing mpls
+ !        
+ address-family ipv6 unicast
+  metric-style wide
+  maximum-paths 32
+ !
+ interface Loopback0
+  passive
+  address-family ipv4 unicast
+   prefix-sid absolute 100000  
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/1
+  circuit-type level-2-only
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix level 2
+   fast-reroute per-prefix ti-lfa
+   fast-reroute per-prefix ti-lfa level 2
+   metric 1
+  !
+  address-family ipv6 unicast
+   fast-reroute per-prefix level 2
+   fast-reroute per-prefix ti-lfa
+   fast-reroute per-prefix ti-lfa level 2
+   metric 1
+  !
+ !
+ interface GigabitEthernet0/0/0/2
+  circuit-type level-2-only
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix level 2
+   fast-reroute per-prefix ti-lfa
+   fast-reroute per-prefix ti-lfa level 2
+   metric 1
+  !
+  address-family ipv6 unicast
+   fast-reroute per-prefix level 2
+   fast-reroute per-prefix ti-lfa
+   fast-reroute per-prefix ti-lfa level 2
+   metric 1
+  !
+ !
+!
+router bgp 100000
+ bgp router-id 10.0.0.0
+ bgp bestpath as-path multipath-relax
+ address-family ipv4 unicast
+  additional-paths receive
+  maximum-paths ebgp 32
+  network 10.0.0.0/32 route-policy SID(0)
+  allocate-label all
+ !
+ address-family ipv6 unicast
+  additional-paths receive
+  maximum-paths ebgp 32
+  network 10::/128
+ !
+ address-family link-state link-state
+ !
+ neighbor 10.0.0.1
+  remote-as 100000
+  description r1 RR client 
+  bmp-activate server 1
+  update-source Loopback0
+  address-family ipv4 unicast
+   route-reflector-client
+  !
+  address-family ipv6 unicast
+   route-reflector-client
+  !
+  address-family link-state link-state
+   route-policy pass in
+   route-policy drop out
+  ! 
+ neighbor 10.0.0.2
+  remote-as 100000
+  description r2 RR client 
+  bmp-activate server 1
+  update-source Loopback0
+  address-family ipv4 unicast
+   route-reflector-client
+  !
+  address-family ipv6 unicast
+   route-reflector-client
+  !
+  address-family link-state link-state
+   route-policy pass in
+   route-policy drop out
+ !
+!
+bmp server 1
+ host 10.0.250.2 port 5000
+ description jalapeno OpenBMP  
+ update-source Loopback0
+ flapping-delay 60
+ initial-delay 5
+ stats-reporting-period 60
+ initial-refresh delay 30 spread 2
+!
+mpls oam
+!         
+segment-routing
+ global-block 100000 163999
+!
+xml agent tty
+ iteration off
+!
+netconf agent tty
+!
+ssh server rate-limit 600
+ssh server session-limit 100
+ssh server v2
+ssh server vrf default
+ssh server netconf vrf default
+end
+
+
+
+
+
+
+
+
+
+
