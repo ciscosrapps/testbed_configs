@@ -75,7 +75,12 @@ end-policy
 route-policy pass
   pass
 end-policy
-!         
+!  
+router static
+ address-family ipv4 unicast
+  0.0.0.0/0 GigabitEthernet0/0/0/0 10.1.1.2
+ !
+!
 router isis 100
  is-type level-2-only
  net 49.0901.0000.0000.0002.00
