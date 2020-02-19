@@ -14,7 +14,10 @@ network:
     ethernets:
         collector_br:
             addresses:
-                - 172.16.0.1/29
+                - 172.16.0.1/30
+            routes:
+                - to: 10.0.0.0/24
+                  via: 172.16.0.2
         vlt_outside_br:
             addresses:
                 - 10.0.254.1/24
