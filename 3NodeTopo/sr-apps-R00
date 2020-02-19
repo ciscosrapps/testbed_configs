@@ -55,9 +55,7 @@ interface MgmtEth0/RP0/CPU0/0
 !
 interface GigabitEthernet0/0/0/0
  description to centos-jalapeno  
- ipv4 address 10.0.250.1 255.255.255.0
- ipv6 address 10:beef:250::1/119
- ipv6 enable
+ ipv4 address 172.16.0.2 255.255.255.253
 !
 interface GigabitEthernet0/0/0/1
  description to r1  

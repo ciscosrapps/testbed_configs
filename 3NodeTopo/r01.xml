@@ -79,10 +79,25 @@
       <alias name='r01mgt3'/>
     </interface>
 
-    <!-- Data Interface 0 -->
+    <!-- Data Interface 0 (TO R0) -->
     <interface type='bridge'>
       <source bridge='vlt_br'/>
       <target dev='r01ge0'/>
+      <model type='e1000'/>
+      <virtualport type='openvswitch'>
+      </virtualport>
+      <vlan>
+        <tag id='100'/>
+      </vlan>
+      <driver >
+      </driver>
+      <alias name='r01ge0'/>
+    </interface>
+
+    <!-- Data Interface 1 (TO R2) -->
+    <interface type='bridge'>
+      <source bridge='vlt_br'/>
+      <target dev='r01ge1'/>
       <model type='e1000'/>
       <virtualport type='openvswitch'>
       </virtualport>
@@ -91,127 +106,7 @@
       </vlan>
       <driver >
       </driver>
-      <alias name='r01ge0'/>
-    </interface>
-
-    <!-- Data Interface 1 -->
-    <interface type='bridge'>
-      <source bridge='vlt_br'/>
-      <target dev='r01ge1'/>
-      <model type='e1000'/>
-      <virtualport type='openvswitch'>
-      </virtualport>
-      <vlan>
-        <tag id='107'/>
-      </vlan>
-      <driver >
-      </driver>
       <alias name='r01ge1'/>
-    </interface>
-
-    <!-- Data Interface 2 -->
-    <interface type='bridge'>
-      <source bridge='vlt_br'/>
-      <target dev='r01ge2'/>
-      <model type='e1000'/>
-      <virtualport type='openvswitch'>
-      </virtualport>
-      <vlan>
-        <tag id='108'/>
-      </vlan>
-      <driver >
-      </driver>
-      <alias name='r01ge2'/>
-    </interface>
-
-    <!-- Data Interface 3 -->
-    <interface type='bridge'>
-      <source bridge='vlt_br'/>
-      <target dev='r01ge3'/>
-      <model type='e1000'/>
-      <virtualport type='openvswitch'>
-      </virtualport>
-      <driver >
-      </driver>
-      <alias name='r01ge3'/>
-    </interface>
-
-    <!-- Data Interface 4 -->
-    <interface type='bridge'>
-      <source bridge='vlt_br'/>
-      <target dev='r01ge4'/>
-      <model type='e1000'/>
-      <virtualport type='openvswitch'>
-      </virtualport>
-      <driver >
-      </driver>
-      <alias name='r01ge4'/>
-    </interface>
-
-    <!-- Data Interface 5 -->
-    <interface type='bridge'>
-      <source bridge='vlt_br'/>
-      <target dev='r01ge5'/>
-      <model type='e1000'/>
-      <virtualport type='openvswitch'>
-      </virtualport>
-      <vlan>
-        <tag id='112'/>
-      </vlan>
-      <driver >
-      </driver>
-      <alias name='r01ge5'/>
-    </interface>
-
-    <!-- Data Interface 6 -->
-    <interface type='bridge'>
-      <source bridge='vlt_br'/>
-      <target dev='r01ge6'/>
-      <model type='e1000'/>
-      <virtualport type='openvswitch'>
-      </virtualport>
-      <vlan>
-        <tag id='113'/>
-      </vlan>
-      <driver >
-      </driver>
-      <alias name='r01ge6'/>
-    </interface>
-
-    <!-- Data Interface 7 -->
-    <interface type='bridge'>
-      <source bridge='vlt_br'/>
-      <target dev='r01ge7'/>
-      <model type='e1000'/>
-      <virtualport type='openvswitch'>
-      </virtualport>
-      <driver >
-      </driver>
-      <alias name='r01ge7'/>
-    </interface>
-
-    <!-- Data Interface 8 -->
-    <interface type='bridge'>
-      <source bridge='vlt_br'/>
-      <target dev='r01ge8'/>
-      <model type='e1000'/>
-      <virtualport type='openvswitch'>
-      </virtualport>
-      <driver >
-      </driver>
-      <alias name='r01ge8'/>
-    </interface>
-
-    <!-- Data Interface 9 -->
-    <interface type='bridge'>
-      <source bridge='vlt_br'/>
-      <target dev='r01ge9'/>
-      <model type='e1000'/>
-      <virtualport type='openvswitch'>
-      </virtualport>
-      <driver >
-      </driver>
-      <alias name='r01ge9'/>
     </interface>
 
     <!-- SerialPortSection -->
