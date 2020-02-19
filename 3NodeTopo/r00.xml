@@ -1,3 +1,4 @@
+
 <domain type='kvm' id='1' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
   <name>r00</name>
   <title>com.cisco.ios-xrv9000</title>
@@ -99,7 +100,7 @@
       <virtualport type='openvswitch'>
       </virtualport>
       <vlan>
-        <tag id='101'/>
+        <tag id='100'/>
       </vlan>
       <driver >
       </driver>
@@ -114,7 +115,7 @@
       <virtualport type='openvswitch'>
       </virtualport>
       <vlan>
-        <tag id='102'/>
+        <tag id='101'/>
       </vlan>
       <driver >
       </driver>
