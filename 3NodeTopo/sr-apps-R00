@@ -92,6 +92,11 @@ route-policy jalapeno
   endif
 end-policy
 !
+router static
+ address-family ipv4 unicast
+  10.0.250.2/32 GigabitEthernet0/0/0/0 172.16.0.1
+ !
+!
 router isis 100
  is-type level-2-only
  net 49.0901.0000.0000.0000.00
